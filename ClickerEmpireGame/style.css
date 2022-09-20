@@ -1,0 +1,44 @@
+body{
+    font-family: Futura!important;
+    letter-spacing: 0.02em!important;
+}
+
+
+.bg-blue {
+    background: #1A4567;
+}
+
+
+
+.w-40{
+    width: 40%;
+}
+
+.w-80{
+    width: 80%;
+}
+
+.w-85{
+    width: 85%;
+}
+
+.w-95{
+    width: 95%;
+}
+
+.h-80{
+    height: 80%;
+}
+
+.h-95{
+    height:95%;
+}
+
+.hover {
+    cursor: pointer;
+}
+
+.hover:hover {
+    opacity: 0.9;
+}
+
