@@ -228,11 +228,11 @@ function mainGamePage(){
                         <img src="${itemList[i].itemImage}" class="img-fluid"> 
                     </div>
                     <div class="col-sm-9">
-                        <div class="d-flex justify-content-between"> 
+                        <div class="d-flex justify-content-between px-3"> 
                             <h4>${itemList[i].itemName}</h4>
                             <h4>0</h4>
                         </div>
-                        <div class="d-flex justify-content-between"> 
+                        <div class="d-flex justify-content-between px-3"> 
                             <p>￥${itemList[i].itemValue.toLocaleString()}</p>
                             <p class="text-success">${itemList[i].itemDescription}</p>
                         </div>
