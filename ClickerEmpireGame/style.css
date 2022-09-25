@@ -34,6 +34,15 @@ body{
     height:95%;
 }
 
+.selectItem{
+    background: #1A4567;
+}
+
+.selectItem:hover{
+    border: 2px solid steelblue;
+    cursor: pointer;
+}
+
 .hover {
     cursor: pointer;
 }
