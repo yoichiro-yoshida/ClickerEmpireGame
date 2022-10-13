@@ -117,7 +117,7 @@ class Items{
     constructor(name,type,currentAmount,maxAmount,perMoney,perRate,price,url){
         this.name = name;
         this.type = type;
-        this.currentAmoutn = currentAmount;
+        this.currentAmount = currentAmount;
         this.maxAmount = maxAmount;
         this.perMoney = perMoney;
         this.perRate = perRate;
@@ -142,7 +142,13 @@ function createUserAccount(userName){
         new Items("Bullet-Speed Sky Railway", "estate", 0, 1, 30000000000, 0, 10000000000000, "https://cdn.pixabay.com/photo/2013/07/13/10/21/train-157027_960_720.png")
     ]
 
-    return new User(userName, 20, 0, 50000, itemsList);
+    if(userName=="test1"){
+        return new User(userName, 20, 350, 10000000, itemsList);
+    }else{
+        return new User(userName, 20, 0, 50000, itemsList);
+    }
+
+    
 }
 
 
@@ -198,12 +204,29 @@ function mainGamePage(user){
     iconBargerCon.classList.add("p-2","pt-5","d-flex","justify-content-center");
     iconBargerCon.innerHTML+=
     `
-        <img src="https://cdn.pixabay.com/photo/2014/04/02/17/00/burger-307648_960_720.png" width="80%" class="img-fluid hover" >
+        <img src="https://cdn.pixabay.com/photo/2014/04/02/17/00/burger-307648_960_720.png" width="80%" class="img-fluid hover" id="clickBarger">
     `
 
     bargerCon.append(countBargerCon,iconBargerCon);
     
     leftCon.append(bargerCon);
+
+    
+    let bargerIcon = iconBargerCon.querySelectorAll("#clickBarger")[0];
+    bargerIcon.addEventListener("click",function(){
+        user.clickCount++;
+        user.money += user.incomePerClick;
+        countBargerCon.innerHTML = "";
+        countBargerCon.innerHTML +=
+        `
+        <h4>${user.clickCount} Burtger</h4>
+         <p>one click ￥${user.incomePerClick}</p>
+        `;
+
+        amountString.innerHTML = "";
+        amountString.innerHTML = "￥" + user.money;
+        })
+    
     
 
     // 右側画面
@@ -245,7 +268,7 @@ function mainGamePage(user){
     let amountCon = document.createElement("div");
     amountCon.classList.add("bg-blue","m-1","p-1","col");
     let amountString = document.createElement("p");
-    amountString.innerHTML = "￥" + user.money;
+    amountString.innerHTML = "￥" + user.money;     
     amountCon.append(amountString)
 
 
@@ -257,7 +280,23 @@ function mainGamePage(user){
     itemListCon.classList.add("bg-dark","mt-2","p-1","overflow-scroll","h-80");
 
 
+    timer = setInterval(function(){
+        user.days++;
+        user.money += user.incomePerSec;
+        amountString.innerHTML = ""
+        amountString.innerHTML = "￥" + user.money;
+        
+
+        if(user.days%365==0){
+            user.age++;
+            yearsString.innerHTML = user.age + " years old";
+        }else{
+            dayssString.innerHTML = user.days + " days";
+        }
+    },1000)
+
     function createItemList(itemListCon,user){
+        itemListCon.innerHTML="";
         itemListCon.innerHTML+=`<div id="itemLists">`
         for(let i = 0;i < user.items.length;i++){
             itemListCon.innerHTML+=
@@ -269,8 +308,8 @@ function mainGamePage(user){
                     </div>
                     <div class="col-sm-9">
                         <div class="d-flex justify-content-between px-3"> 
-                         <h4>${user.items[i].name}</h4>
-                            <h4>0</h4>
+                            <h4>${user.items[i].name}</h4>
+                            <h4>${user.items[i].currentAmount}</h4>
                         </div>
                         <div class="d-flex justify-content-between px-3"> 
                             <p>￥${user.items[i].price.toLocaleString()}</p>
@@ -320,13 +359,83 @@ function mainGamePage(user){
                 </div>
             </div>
             <div class="p-2">
-                <p>How many would you like to by?</p>
+                
+                <p>How many would you like to buy?</p>
+                
+                <div class="form-group">
+                    <input type="number" placeholder="0" class="col-12 form-control"/>
+                </div>
+                <p class="d-flex justify-content-end" id="totalPrice">total: ￥0</p>
+                
             </div>
+            <div class="d-flex justify-content-between p-2">
+                <button class="btn btn-outline-primary col-5 bg-light" id="backBtn">back</button>
+                <button class="btn btn-primary col-5" id="purchaseBtn">purchase</button>
+
+            </di>
         `
 
-        return viewItemInfoCon;
+        let inputCount = viewItemInfoCon.querySelectorAll("input")[0];
 
+        inputCount.addEventListener("input",function(){
+            viewItemInfoCon.querySelectorAll("#totalPrice")[0].innerHTML = 
+            `
+            total: ￥${user.items[index].price * parseInt(inputCount.value)}
+            `
+        });
+
+
+        let backBtn = viewItemInfoCon.querySelectorAll("#backBtn")[0];
+        backBtn.addEventListener("click",function(){
+            itemListCon.innerHTML="";
+            createItemList(itemListCon,user);
+        });
+
+        let parchasesBtn = viewItemInfoCon.querySelectorAll("#purchaseBtn")[0];
+        parchasesBtn.addEventListener("click",function(){
+            
+            itemListCon.innerHTML="";
+            createItemList(itemListCon,user);
+            parchasesItem(user,index,parseInt(inputCount.value));
+        })
+
+        return viewItemInfoCon;
     }
+
+    function addItemsAmmount(user,index,count){
+        if(user.items[index].type == "nomal"){
+            user.money -= count * user.items[index].price;
+            amountString.innerHTML = "￥" + user.money;
+            user.incomePerClick += user.items[index].perMoney * count;
+            countBargerCon.innerHTML = 
+            `
+            <h4>${user.clickCount} Burtger</h4>
+            <p>one click ￥${user.incomePerClick}</p>
+            `;
+        }else if(user.items[index].type == "estate"){
+            user.incomePerSec += user.items[index].perMoney * count;
+            user.money -= count * user.items[index].price;
+            amountString.innerHTML = "￥" + user.money;
+        }
+    }
+
+    function parchasesItem(user,index,count){
+        if(count<=0 || count%1!=0){
+            alert("有効な数値ではありません。");
+        }else if(user.money < user.items[index].price * count){
+            alert("お金が足りません。");
+        }else if(user.items[index].currentAmount + count > user.items[index].maxAmount && user.items[index].type != "invest"){
+            alert("アイテムの購入量の最大値を超えています。");
+        }else{
+            user.items[index].currentAmount += Number(count);
+            createItemList(itemListCon,user);
+            addItemsAmmount(user,index,count);
+        }
+    }
+
+    
+
+
 
     createItemList(itemListCon,user);
 
