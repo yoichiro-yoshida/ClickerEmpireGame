@@ -1,99 +1,3 @@
-const itemList = [
-    {
-        "itemName":"Flip machine",
-        "itemType":"nomal",
-        "itemMaxBuy":500,
-        "itemDescription":"￥25/click",
-        "itemValue":15000,
-        "itemImage":"https://cdn.pixabay.com/photo/2019/06/30/20/09/grill-4308709_960_720.png"
-    },
-    {
-        "itemName":"ETF Stock",
-        "itemType":"invest",
-        "itemMaxBuy":-1,
-        "itemDescription":"￥0.1/sec",
-        "itemValue":300000,
-        "itemImage":"https://cdn.pixabay.com/photo/2016/03/31/20/51/chart-1296049_960_720.png"
-    },
-    {
-        "itemName":"ETF Bonds",
-        "itemType":"invest",
-        "itemMaxBuy":-1,
-        "itemDescription":"￥0.07/sec",
-        "itemValue":300000,
-        "itemImage":"https://cdn.pixabay.com/photo/2016/03/31/20/51/chart-1296049_960_720.png"
-    },
-    {
-        "itemName":"Lemonade Stand",
-        "itemType":"estate",
-        "itemMaxBuy":1000,
-        "itemDescription":"￥30/sec",
-        "itemValue":30000,
-        "itemImage":"https://cdn.pixabay.com/photo/2012/04/15/20/36/juice-35236_960_720.png"
-    },
-    {
-        "itemName":"Ice Cream Truck",
-        "itemType":"estate",
-        "itemMaxBuy":500,
-        "itemDescription":"￥120/sec",
-        "itemValue":30000,
-        "itemImage":"https://cdn.pixabay.com/photo/2020/01/30/12/37/ice-cream-4805333_960_720.png"
-    },
-    {
-        "itemName":"House",
-        "itemType":"estate",
-        "itemMaxBuy":100,
-        "itemDescription":"￥32,000/sec",
-        "itemValue":20000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2016/03/31/18/42/home-1294564_960_720.png"
-    },
-    {
-        "itemName":"TownHouse",
-        "itemType":"estate",
-        "itemMaxBuy":100,
-        "itemDescription":"￥64,000/sec",
-        "itemValue":40000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2019/06/15/22/30/modern-house-4276598_960_720.png"
-    },
-    {
-        "itemName":"Mansion",
-        "itemType":"estate",
-        "itemMaxBuy":20,
-        "itemDescription":"￥500,000/sec",
-        "itemValue":250000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2017/10/30/20/52/condominium-2903520_960_720.png"
-    },
-    {
-        "itemName":"Industrial Space",
-        "itemType":"estate",
-        "itemMaxBuy":10,
-        "itemDescription":"2,200,000/sec",
-        "itemValue":1000000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2012/05/07/17/35/factory-48781_960_720.png"
-    },
-    {
-        "itemName":"Hotel Skyscraper",
-        "itemType":"estate",
-        "itemMaxBuy":5,
-        "itemDescription":"25,000,000/sec",
-        "itemValue":10000000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2012/05/07/18/03/skyscrapers-48853_960_720.png"
-    },
-    {
-        "itemName":"Bullet-Speed Sky Railway",
-        "itemType":"estate",
-        "itemMaxBuy":1,
-        "itemDescription":"30,000,000,000/sec",
-        "itemValue":10000000000000,
-        "itemImage":"https://cdn.pixabay.com/photo/2013/07/13/10/21/train-157027_960_720.png"
-    }
-]
-
-function test(){
-    let testEle = document.getElementById("test");
-    testEle.innerHTML += " test";
-}
-
 const config = {
     initialForm: document.getElementById("initial-form"),
     gamePage:document.getElementById("game-page")
@@ -143,13 +47,15 @@ function createUserAccount(userName){
     ]
 
     if(userName=="test1"){
-        return new User(userName, 20, 350, 10000000, itemsList);
+        return new User(userName, 20, 350, 10000000000000000, itemsList);
     }else{
         return new User(userName, 20, 0, 50000, itemsList);
     }
 
     
 }
+
+
 
 
 function gameStart(){
@@ -162,19 +68,65 @@ function gameStart(){
         }else{
             let user = createUserAccount(userName);
             config.gamePage.append(mainGamePage(user));
+            config.initialForm.classList.remove("d-block")
             config.initialForm.classList.add("d-none");
+            config.gamePage.classList.remove("d-none");
             config.gamePage.classList.add("d-block");
         } 
     })
+
+    let loadGameBtn = config.initialForm.querySelectorAll("#loadGame")[0];
+    loadGameBtn.addEventListener("click",function(){
+        let userName = config.initialForm.querySelectorAll("input")[0].value;
+
+        if(userName == ""){
+            return alert("please put your name");
+        }else{
+            let user = getLoadUserData(userName);
+            // user = "test1";
+            if(user == null){
+                return alert("this user is no exist");
+            }
+            // console.log(userName);
+            console.log(user);
+
+            config.gamePage.append(mainGamePage(user));
+            config.initialForm.classList.remove("d-block")
+            config.initialForm.classList.add("d-none");
+            config.gamePage.classList.remove("d-none");
+            config.gamePage.classList.add("d-block");
+        }
+    })
+
+    function getLoadUserData(userName){
+        return JSON.parse(localStorage.getItem(userName));
+    }
 }
 
 
 
-
-
-
 function mainGamePage(user){
+    
+    function startTimer(user){
+        timer = setInterval(function(){
+            user.days++;
+            user.money += user.incomePerSec;
+            updateCurrentAmount(user);
+            if(user.days%365==0){
+                user.age++;
+                yearsString.innerHTML = user.age + " years old";
+            }else{
+                dayssString.innerHTML = user.days + " days";
+            }
+        },1000)
+    }
 
+    function stoptimer(){
+        clearInterval(timer);
+    }
+    
+
+    startTimer(user);
 
     let baseContainer = document.createElement("div");
     baseContainer.classList.add("d-flex","justify-content-center","text-white","p-md-5","pb-5","vh-100")
@@ -193,12 +145,15 @@ function mainGamePage(user){
     let countBargerCon = document.createElement("div");
     countBargerCon.classList.add("bg-blue","text-center");
 
-    countBargerCon.innerHTML =
-    `
-    <h4>${user.clickCount} Burtger</h4>
-    <p>one click ￥${user.incomePerClick}</p>
-    `;
+    function upadateCountBarger(user){
+        countBargerCon.innerHTML =
+        `
+        <h4>${user.clickCount} Burtger</h4>
+        <p>one click ￥${user.incomePerClick}</p>
+        `;
 
+    }
+    upadateCountBarger(user);
 
     let iconBargerCon = document.createElement("div");
     iconBargerCon.classList.add("p-2","pt-5","d-flex","justify-content-center");
@@ -223,8 +178,8 @@ function mainGamePage(user){
          <p>one click ￥${user.incomePerClick}</p>
         `;
 
-        amountString.innerHTML = "";
-        amountString.innerHTML = "￥" + user.money;
+        updateCurrentAmount(user);
+
         })
     
     
@@ -268,7 +223,7 @@ function mainGamePage(user){
     let amountCon = document.createElement("div");
     amountCon.classList.add("bg-blue","m-1","p-1","col");
     let amountString = document.createElement("p");
-    amountString.innerHTML = "￥" + user.money;     
+    updateCurrentAmount(user);
     amountCon.append(amountString)
 
 
@@ -278,22 +233,6 @@ function mainGamePage(user){
 
     let itemListCon = document.createElement("div");
     itemListCon.classList.add("bg-dark","mt-2","p-1","overflow-scroll","h-80");
-
-
-    timer = setInterval(function(){
-        user.days++;
-        user.money += user.incomePerSec;
-        amountString.innerHTML = ""
-        amountString.innerHTML = "￥" + user.money;
-        
-
-        if(user.days%365==0){
-            user.age++;
-            yearsString.innerHTML = user.age + " years old";
-        }else{
-            dayssString.innerHTML = user.days + " days";
-        }
-    },1000)
 
     function createItemList(itemListCon,user){
         itemListCon.innerHTML="";
@@ -318,11 +257,13 @@ function mainGamePage(user){
                     </div>
                 
             </div>
+            
             `
         }
         itemListCon.innerHTML+=`</div>`
 
         let select = itemListCon.querySelectorAll(".selectItem");
+        
         // console.log(select[0]);
 
         for(let i=0; i < select.length; i++){
@@ -334,6 +275,8 @@ function mainGamePage(user){
             });
         }
     }
+
+    
 
     function desplayItemsIncome(userItems,type){
 
@@ -380,7 +323,7 @@ function mainGamePage(user){
         inputCount.addEventListener("input",function(){
             viewItemInfoCon.querySelectorAll("#totalPrice")[0].innerHTML = 
             `
-            total: ￥${user.items[index].price * parseInt(inputCount.value)}
+            total: ￥${totalPrice(user,index,parseInt(inputCount.value)).toLocaleString()}
             `
         });
 
@@ -402,20 +345,51 @@ function mainGamePage(user){
         return viewItemInfoCon;
     }
 
+    function updateCurrentAmount(user){
+        amountString.innerHTML = "￥" + user.money.toLocaleString();
+    }
+
+    function getETFStockPrice(user,index,count){
+        return parseInt(user.items[index].price * Math.pow(1 + user.items[index].perRate, count));
+    }
+
+    function totalPrice(user,index,count){
+        let total = 0;
+        count = Number(count);
+        if(user.items[index].name == "ETF Stock"){
+           for(let i = 0; i < count; i++){
+            total += parseInt(user.items[index].price * Math.pow(1 + user.items[index].perRate,i));
+           }
+           return total;
+        }else if(count > 0 && count%1 == 0){
+            total += count * user.items[index].price;
+            return total;
+        }
+        else return total;
+    }
+
     function addItemsAmmount(user,index,count){
         if(user.items[index].type == "nomal"){
-            user.money -= count * user.items[index].price;
-            amountString.innerHTML = "￥" + user.money;
+            user.money -= totalPrice(user,index,count)
+            updateCurrentAmount(user);
             user.incomePerClick += user.items[index].perMoney * count;
-            countBargerCon.innerHTML = 
-            `
-            <h4>${user.clickCount} Burtger</h4>
-            <p>one click ￥${user.incomePerClick}</p>
-            `;
+            upadateCountBarger(user);
         }else if(user.items[index].type == "estate"){
             user.incomePerSec += user.items[index].perMoney * count;
-            user.money -= count * user.items[index].price;
-            amountString.innerHTML = "￥" + user.money;
+            user.money -= totalPrice(user,index,count)
+            updateCurrentAmount(user);
+        }else if(user.items[index].type == "invest"){
+            user.money -= totalPrice(user,index,count);
+            if(user.items[index].name == "ETF Stock"){
+                user.stock += totalPrice(user,index,count);
+                user.items[index].price = getETFStockPrice(user,index,count);
+                user.incomePerSec += user.stock * user.items[index].perRate;
+                updateCurrentAmount(user);
+            }else if(user.items[index].name == "ETF Bonds"){
+                user.stock += totalPrice(user,index,count);
+                user.incomePerSec += user.stock * user.items[index].perRate;
+                updateCurrentAmount(user);
+            }
         }
     }
 
@@ -428,27 +402,51 @@ function mainGamePage(user){
             alert("アイテムの購入量の最大値を超えています。");
         }else{
             user.items[index].currentAmount += Number(count);
-            createItemList(itemListCon,user);
             addItemsAmmount(user,index,count);
+            createItemList(itemListCon,user);
+           
         }
     }
 
+    let saveDeleteCon = document.createElement("div");
+    saveDeleteCon.innerHTML+=
+        `
+        <div class="d-flex justify-content-end mt-2">
+            <div class="border p-2 mr-2 hover" id="reset">
+                <i class="fa fa-undo fa-2x text-white">
+                </i>
+            </div>
+            <div class="border p-2 hover" id="save">
+                <i class="fa fa-save fa-2x text-white"">
+                </i>
+            </div>
+        </div>
+        `
+
+    let saveBtn = saveDeleteCon.querySelectorAll("#save")[0];
+    saveBtn.addEventListener("click",function(){
+        saveUserDate(user);
+        stoptimer();
+        config.gamePage.classList.remove("d-block")
+        config.gamePage.classList.add("d-none");
+        config.initialForm.classList.remove("d-none");
+        config.initialForm.classList.add("d-block");
+
+        ;
+    })
     
-
-
-
+    
     createItemList(itemListCon,user);
-
-
-    rightContainer.append(statusCon,itemListCon);
-    
-
-
-
+    rightContainer.append(statusCon,itemListCon,saveDeleteCon);
     gameContainer.append(leftCon,rightContainer);
     baseContainer.append(gameContainer);
     
     return baseContainer;
+
+    function saveUserDate(user){
+        localStorage.setItem(user.name, JSON.stringify(user));
+        alert("Saved your data. Please put the same name when you login.");
+    }
     
 }
 
