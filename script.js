@@ -39,7 +39,7 @@ class View{
             <div  class="col-12 text-center p-2">
                 <h1 id="test" class="pb-3">Click Empire Game</h1>
                 <form id="user-form">
-                    <input type="text" placeholder="Your name" value="test1">
+                    <input type="text" placeholder="Your name">
                 </form>
                 <div class="d-flex justify-content-between my-3">
                     <div class="col-6 pe-1">
